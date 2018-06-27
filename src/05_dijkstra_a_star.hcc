@@ -1,0 +1,85 @@
+#ifndef __DIJKSTRA_A_STAR__
+#define __DIJKSTRA_A_STAR__
+
+// This file is included in `00_structures.h', since it contains methods of a templated class.
+
+template <typename V>
+std::pair<std::unique_ptr<size_t[]>, std::unique_ptr<size_t[]>> node<V>::dijkstra(V &start_node) {
+    size_t num_nodes = get_number_of_nodes();
+    std::unique_ptr<size_t[]> dist{new V[num_nodes]}, prev{new V[num_nodes]};
+    const size_t infty = -1;
+
+    queue<size_t> vertex_set;
+
+    for (size_t i = 0; i < num_nodes; ++i) {
+        dist[i] = infty;
+        prev[i] = infty;
+        vertex_set.append(i);
+    }
+    dist[start_node] = 0;
+
+    while (vertex_set.is_not_empty()) {
+        size_t min_dist = infty, node_min_dist = 0;
+        for (auto it = vertex_set.begin(); it != vertex_set.end(); ++it)
+            if (dist[*it] < min_dist) {
+                min_dist = dist[*it];
+                node_min_dist = *it;
+            }
+
+        vertex_set.remove_el(node_min_dist);
+
+        auto u_node = find_node(node_min_dist);
+        for (auto v_node = begin(u_node); v_node != end(); ++v_node) {
+            auto alt = min_dist + get_weight(u_node->_node_index, *v_node);
+            if (alt < dist[*v_node]) {
+                dist[*v_node] = alt;
+                prev[*v_node] = u_node->_node_index;
+            }
+        }
+    }
+
+    return std::make_pair(std::move(dist), std::move(prev));
+}
+
+template <typename V>
+std::pair<std::unique_ptr<size_t[]>, std::unique_ptr<size_t[]>> node<V>::a_star(V &start_node) {
+    size_t num_nodes = get_number_of_nodes();
+    std::unique_ptr<size_t[]> dist{new V[num_nodes]}, prev{new V[num_nodes]};
+    const size_t infty = -1;
+
+    queue<size_t> vertex_set;
+
+    for (size_t i = 0; i < num_nodes; ++i) {
+        dist[i] = infty;
+        prev[i] = infty;
+        vertex_set.append(i);
+    }
+    dist[start_node] = 0;
+
+    while (vertex_set.is_not_empty()) {
+        size_t min_dist = infty, node_min_dist = 0;
+        for (auto it = vertex_set.begin(); it != vertex_set.end(); ++it)
+            if (dist[*it] < min_dist) {
+                min_dist = dist[*it];
+                node_min_dist = *it;
+            }
+
+        vertex_set.remove_el(node_min_dist);
+
+        auto u_node = find_node(node_min_dist);
+        for (auto v_node = begin(u_node); v_node != end(); ++v_node) {
+            // The only difference between the Dijkstra's and A* algorithms is the addition of an
+            // heuristic estimation of the distance between two points.
+            auto alt = min_dist + get_weight(u_node->_node_index, *v_node) +
+                       get_heuristic(u_node->_node_index, *v_node);
+            if (alt < dist[*v_node]) {
+                dist[*v_node] = alt;
+                prev[*v_node] = u_node->_node_index;
+            }
+        }
+    }
+
+    return std::make_pair(std::move(dist), std::move(prev));
+}
+
+#endif

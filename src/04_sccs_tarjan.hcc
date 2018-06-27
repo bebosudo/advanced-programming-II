@@ -1,0 +1,56 @@
+#ifndef __SCCS_TARJAN__
+#define __SCCS_TARJAN__
+
+// This file is included in `00_structures.h', since it contains methods of a templated class.
+
+template <typename V>
+void node<V>::DFS_recur_tarjan(node<V> *curr_node, size_t &id, queue<node<V> *> &open_set) {
+    // We didn't find a "proper" way to return the groups of nodes that form a SCC, so we just print
+    // them.
+    if (curr_node->tarjan_id != DEFAULT_UNVISITED)
+        return;
+
+    open_set.push(curr_node);
+    curr_node->tarjan_id = curr_node->tarjan_lowlink = id++;
+
+    for (auto it = begin(curr_node); it != end(); ++it) {
+        auto it_node = find_node(*it);
+
+        if (it_node->tarjan_id == DEFAULT_UNVISITED)
+            DFS_recur_tarjan(it_node, id, open_set);
+        if (open_set.contains(it_node))
+            curr_node->tarjan_lowlink =
+                std::min(curr_node->tarjan_lowlink, it_node->tarjan_lowlink);
+    }
+
+    if (curr_node->tarjan_id == curr_node->tarjan_lowlink and
+        curr_node->tarjan_id != DEFAULT_UNVISITED) {
+        //
+        std::cout << "SCC found: {";
+        auto it_node = open_set.pop();
+
+        for (; it_node->tarjan_id != it_node->tarjan_lowlink; it_node = open_set.pop()) {
+            it_node->print_node();
+            std::cout << ", ";
+            it_node->tarjan_lowlink = curr_node->tarjan_id;
+        }
+        it_node->print_node();
+        std::cout << "}" << std::endl;
+    }
+    return;
+}
+
+template <typename V>
+void node<V>::tarjan() {
+    reset_id_tarjan();
+    queue<node *> open_set;
+    size_t id = 1;
+
+    auto it = this;
+    do {
+        DFS_recur_tarjan(it, id, open_set);
+        it = it->_next_node.get();
+    } while (it);
+}
+
+#endif

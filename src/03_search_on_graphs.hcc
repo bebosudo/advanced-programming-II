@@ -1,0 +1,62 @@
+#ifndef __SEARCH_ON_GRAPHS__
+#define __SEARCH_ON_GRAPHS__
+
+// This file is included in `00_structures.h', since it contains methods of a templated class.
+
+template <typename V>
+std::unique_ptr<V[]> node<V>::DFS_recur(V &start_node,
+                                        std::unique_ptr<V[]> temp,
+                                        size_t &number_of_nodes_inserted) {
+    temp[number_of_nodes_inserted] = start_node;
+    number_of_nodes_inserted++;
+
+    set_discovered(start_node);
+    // We iterate over the "values" of the "key" `start_node`.
+    for (auto it = begin(start_node); it != end(); ++it) {
+        node *w = find_node(*it);
+
+        if (not w->discovered)
+            temp = std::move(DFS_recur(w->_node_index, std::move(temp), number_of_nodes_inserted));
+    }
+    return std::move(temp);
+}
+
+template <typename V>
+std::pair<std::unique_ptr<V[]>, size_t> node<V>::DFS(V &start_node) {
+    size_t actual_number_of_nodes_discovered = 0;
+    std::unique_ptr<V[]> temp{new V[get_number_of_nodes()]};
+    temp = DFS_recur(start_node, std::move(temp), actual_number_of_nodes_discovered);
+
+    reset_discovered();
+    return std::make_pair(std::move(temp), actual_number_of_nodes_discovered);
+}
+
+template <typename V>
+std::pair<std::unique_ptr<V[]>, size_t> node<V>::BFS(V &start_node) {
+    size_t actual_number_of_nodes_discovered = 0;
+    std::unique_ptr<V[]> temp{new V[get_number_of_nodes()]};
+
+    // Keeps track of the children nodes to be discovered.
+    queue<node *> open_set;
+
+    node *root{find_node(start_node)};
+    open_set.append(root);
+
+    while (open_set.is_not_empty()) {
+        node *curr_node{open_set.pop()};
+        if (curr_node->discovered)
+            continue;
+
+        temp[actual_number_of_nodes_discovered] = curr_node->_node_index;
+        actual_number_of_nodes_discovered++;
+        set_discovered(curr_node->_node_index);
+
+        for (auto it = begin(curr_node->_node_index); it != end(); ++it)
+            open_set.append(find_node(*it));
+    }
+
+    reset_discovered();
+    return std::make_pair(std::move(temp), actual_number_of_nodes_discovered);
+}
+
+#endif
