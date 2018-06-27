@@ -19,13 +19,14 @@ TEST_CASE("--- 01 --- insertion-sort") {
         FAST_CHECK_EQ(A_in[i], A_out[i]);
 }
 
-// TEST_CASE("--- 01 --- select algorithm") {
-//     int A[] = {10, 123, 34, 809, 21, 35, 543, 345, 6, 2, 45, 23}, A_size = 12, A_in = 7, A_out =
-//     35,
-//         B[] = {5, 2, 4, 6, 1, 3}, B_size = 6, B_in = 5, B_out = 5;
+TEST_CASE("--- 01 --- select algorithm") {
+    srand(time(0));
+    int A[] = {10, 123, 34, 809, 21, 35, 543, 345, 6, 2, 45, 23}, B[] = {5, 2, 4, 6, 1, 3, 9};
+    size_t A_size = 12, A_in = 7, A_out = 45, B_size = 7, B_in = 5, B_out = 5;
 
-//     select_element(A, A_size, A_in, 0, A_size);
-// }
+    FAST_CHECK_EQ(select_alg(A, A_size, A_in), A_out);
+    FAST_CHECK_EQ(select_alg(B, B_size, B_in), B_out);
+}
 
 TEST_CASE("--- 02 --- matmul: naive") {
     unsigned dim, dimensions[] = {4, 10, 20};
@@ -35,9 +36,8 @@ TEST_CASE("--- 02 --- matmul: naive") {
         double *m1{new double[dim * dim]}, *m2{new double[dim * dim]}, *res{new double[dim * dim]};
         naive_matmul(m1, m2, res, dim);
 
-        for (size_t i = 0; i < dim * dim; ++i) {
+        for (size_t i = 0; i < dim * dim; ++i)
             FAST_CHECK_EQ(res[i], dim);
-        }
 
         delete[] m1;
         delete[] m2;
@@ -52,9 +52,8 @@ TEST_CASE("--- 02 --- matmul: Strassen algorithm") {
         dim = dimensions[i];
         std::unique_ptr<double[]> result = strassen(dim);
 
-        for (size_t i = 0; i < dim * dim; ++i) {
+        for (size_t i = 0; i < dim * dim; ++i)
             FAST_CHECK_EQ(result[i], dim);
-        }
     }
 }
 

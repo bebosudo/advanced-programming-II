@@ -6,6 +6,8 @@
 #include <iterator>  // need to derive from std::iterator
 #include <memory>
 #include <utility>
+#include <random>
+#include <cmath>
 
 // Many algorithms are implemented as public methods of classes contained in the following header,
 // e.g. DFS, BFS, dijkstra, A*.
@@ -13,7 +15,7 @@
 
 // 01
 void insertion_sort(int *A, int size);
-int select_element(int *A, int A_size, int j, int begin, int end, int sort_less_than = 140);
+size_t select_alg(int *input_arr, size_t length, size_t index, size_t strategy = 0);
 
 // 02: matrix multiplication
 void naive_matmul(double *A, double *B, double *C, unsigned N);

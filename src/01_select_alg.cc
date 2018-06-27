@@ -1,81 +1,43 @@
 #include "00_exercises.h"
 
-// Pseudocode
-/*
-select(A, j, begin=1, end=|A|)
+// https://rcoh.me/posts/linear-time-median-finding/
 
-  # reorder the array
-  if end-begin+1 < 140                               # O(1)
-    insertion_sort(A, begin, end)                    # O(|A|)
-    return A[j]
+size_t tri_partition(int *input_arr, size_t from, size_t to, size_t index) {
+    int pivot_val = input_arr[index];
 
-  # find the median of medians
-  pivot = select_pivot(A, begin, end)                # O(|A|/5) + T(|A|/5)
+    std::swap(input_arr[index], input_arr[to]);
+    size_t pivot_idx = from;
 
-  # tri-partition the array
-  (k_1, k_2) = tri_partition(A, begin, end, pivot)   # O(|A|)
+    for (size_t i = from; i < to; i++)
+        if (input_arr[i] < pivot_val) {
+            std::swap(input_arr[pivot_idx], input_arr[i]);
+            pivot_idx++;
+        }
 
-  # recursively call select in the correct interval
-  if j < k_1
-    return select(A, j, begin, k_1 - 1)
+    std::swap(input_arr[to], input_arr[pivot_idx]);
+    return pivot_idx;
+}
 
-  if j > k_2
-    return select(A, j, k_2 + 1, end)
+size_t select_alg_recur(int *input_arr, size_t from, size_t to, size_t index, size_t strategy) {
+    if (from == to)
+        return input_arr[index];
 
-  return A[j]
+    if (strategy == 0) {
+        ;
+    }
+    size_t pivot = from + floor(rand() % (to - from + 1));
 
-select_pivot(A, begin, end)
-  num_of_blocks <- (end-begin+1)/5          # O(1)
+    pivot = tri_partition(input_arr, from, to, pivot);
 
-  # initialize medians array
-  medians <- array[num_of_blocks]           # O(|A|)
+    if (index == pivot)
+        return input_arr[index];
+    else if (index < pivot)
+        return select_alg_recur(input_arr, from, pivot - 1, index, strategy);
+    else
+        return select_alg_recur(input_arr, pivot + 1, to, index, strategy);
+}
 
-  # compute the medians for each block
-  for i in [0,num_of_blocks]                # O(|A|/5) = O(|A|)
-
-    # beginning point for each block
-    cbegin = begin + 5 * i                  # O(1)
-
-    # reorder the block
-    insertion_sort(A, cbegin, cbegin+4)     # O(1)
-
-    # add the i-th median to the array
-    medians[i+1) <- A[cbegin+2]             # O(1)
-
-  end-for
-
-  # find the median of medians              # T(|A|/5)
-  return select(medians, 1, num_of_blocks, (1+num_of_blocks)/2))
-*/
-
-// int select_pivot(int *A, int begin, int end) {
-//     int num_of_blocks = (end - begin + 1) / 5;  // O(1)
-
-//     // initialize medians array
-//     int medians = array[num_of_blocks];  // O(|A|)
-
-//     // compute the medians for each block
-//     for (i in[ 0, num_of_blocks ]) {  // O(|A|/5) = O(|A|)
-
-//         // beginning point for each block
-//         int cbegin = begin + 5 * i;  // O(1)
-
-//         // reorder the block
-//         insertion_sort(A, cbegin, cbegin + 4);  // O(1)
-
-//         // add the i - th median to the array
-//         medians[i+1) = A[cbegin+2];             // O(1)
-//     }
-
-//     // find the median of medians #T(| A | / 5)
-//   return select(medians, 1, num_of_blocks, (1+num_of_blocks)/2));
-// }
-
-// int select_element(int *A, int A_size, int j, int begin, int end, int sort_less_than) {
-//     if (end - begin + 1 < sort_less_than) {
-//         insertion_sort(A, A_size);
-//         return A[j];
-//     }
-
-//     pivot = select_pivot(A, begin, end);
-// }
+// Just a wrapper to makes sure that the behaviour is the same for arrays of even or odd length.
+size_t select_alg(int *input_arr, size_t length, size_t index, size_t strategy) {
+    return select_alg_recur(input_arr, 0, length, length % 2 == 1 ? index : index + 1, strategy);
+}
