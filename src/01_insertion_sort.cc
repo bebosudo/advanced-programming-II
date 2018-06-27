@@ -6,10 +6,8 @@ void insertion_sort(int *A, int size) {
         key = A[j];
         i = j - 1;
 
-        while (i >= 0 and A[i] > key) {
+        for (; i >= 0 and A[i] > key; i--)
             A[i + 1] = A[i];
-            i--;
-        }
 
         A[i + 1] = key;
     }

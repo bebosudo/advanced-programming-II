@@ -15,7 +15,7 @@
 
 // 01
 void insertion_sort(int *A, int size);
-size_t select_alg(int *input_arr, size_t length, size_t index, size_t strategy = 0);
+size_t select_alg(int *input_arr, size_t length, size_t index);
 
 // 02: matrix multiplication
 void naive_matmul(double *A, double *B, double *C, unsigned N);
