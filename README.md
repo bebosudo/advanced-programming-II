@@ -1,7 +1,7 @@
 # Advanced Programming and Algorithmic Design - module II
 Second module of the Advanced Programming and Algorithmic Design course, held @ uniTS by prof. A. Casagrande (http://www.dmi.units.it/~casagran/).
 
-## Table of contents of algorithms implemented
+## TOC: algorithms implemented
 
 1. Insertion sort and selection (quickselect) algorithms;
 2. Matrix multiplication: naive and Strassen algorithms;
